@@ -20,27 +20,27 @@ async def blink1():
         led.value(0)
         await asyncio.sleep(0.5)
 
-async def readInput():
-   while True:
-       LF = sw1.value()
-       LB = sw2.value()
-       RF = sw3.value()
-       RB = sw4.value()
-#        print(LF,LB,RF,RB)
-       await asyncio.sleep(0.1)
+# async def readInput():
+#    while True:
+#        LF = sw1.value()
+#        LB = sw2.value()
+#        RF = sw3.value()
+#        RB = sw4.value()
+#        await asyncio.sleep(0.1)
        
 async def controlTask():
+    print('Start')
     while True:
-#         motor1.forward(70)
+#         motor2.forward(100)
         if (sw1.value() == 0):
-            motor1.forward(80)
+            motor1.forward(50)
         elif (sw2.value() == 0):
             motor1.backward(50)
         else:
             motor1.stop()
             
         if (sw3.value() == 0):
-            motor2.forward(80)
+            motor2.forward(50)
         elif (sw4.value() == 0):
             motor2.backward(50)
         else:
@@ -50,7 +50,7 @@ async def controlTask():
         
 async def main():
     asyncio.create_task(blink1())
-    asyncio.create_task(readInput())
+#     asyncio.create_task(readInput())
     asyncio.create_task(controlTask())
 
 loop = asyncio.get_event_loop()
