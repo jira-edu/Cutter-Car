@@ -1,12 +1,14 @@
 from machine import Pin
 import asyncio
 import motorControl as motor
+import time
 
 led = Pin(2, Pin.OUT)
 sw1 = Pin(16, Pin.IN, Pin.PULL_UP)
 sw2 = Pin(17, Pin.IN, Pin.PULL_UP)
 sw3 = Pin(18, Pin.IN, Pin.PULL_UP)
 sw4 = Pin(19, Pin.IN, Pin.PULL_UP)
+emerSw = Pin(4, Pin.IN, Pin.PULL_UP)
 
 motor1 = motor.Motor(23, 25, 26)
 motor1.stop()
@@ -20,13 +22,12 @@ async def blink1():
         led.value(0)
         await asyncio.sleep(0.5)
 
-# async def readInput():
-#    while True:
-#        LF = sw1.value()
-#        LB = sw2.value()
-#        RF = sw3.value()
-#        RB = sw4.value()
-#        await asyncio.sleep(0.1)
+async def readInput():
+   while True:
+       if (emerSw.value() == 0):
+           loop.stop()
+           
+       await asyncio.sleep(0.2)
        
 async def controlTask():
     print('Start')
@@ -50,9 +51,17 @@ async def controlTask():
         
 async def main():
     asyncio.create_task(blink1())
-#     asyncio.create_task(readInput())
+    asyncio.create_task(readInput())
     asyncio.create_task(controlTask())
 
 loop = asyncio.get_event_loop()
 loop.create_task(main())
 loop.run_forever()
+
+motor1.stop()
+motor2.stop()
+led.value(1)
+while True:
+    print('Emergency Stop!!!')
+    time.sleep(1)
+
