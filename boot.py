@@ -1,14 +1,19 @@
-from machine import Pin
+from machine import Pin, ADC
 import asyncio
 import motorControl as motor
 import time
 
 led = Pin(2, Pin.OUT)
+
 sw1 = Pin(16, Pin.IN, Pin.PULL_UP)
 sw2 = Pin(17, Pin.IN, Pin.PULL_UP)
 sw3 = Pin(18, Pin.IN, Pin.PULL_UP)
 sw4 = Pin(19, Pin.IN, Pin.PULL_UP)
 emerSw = Pin(4, Pin.IN, Pin.PULL_UP)
+
+pot = ADC(Pin(15))
+pot.atten(ADC.ATTN_11DB) 
+value = 0
 
 motor1 = motor.Motor(23, 25, 26)
 motor1.stop()
@@ -23,27 +28,28 @@ async def blink1():
         await asyncio.sleep(0.5)
 
 async def readInput():
+   global value
    while True:
-       if (emerSw.value() == 0):
+        if (emerSw.value() == 0):
            loop.stop()
-           
-       await asyncio.sleep(0.2)
+        value = int((pot.read() / 4095) * 100)
+        await asyncio.sleep(0.2)
        
 async def controlTask():
     print('Start')
     while True:
-#         motor2.forward(100)
+#         motor2.forward(value)
         if (sw1.value() == 0):
-            motor1.forward(50)
+            motor1.forward(value)
         elif (sw2.value() == 0):
-            motor1.backward(50)
+            motor1.backward(value)
         else:
             motor1.stop()
             
         if (sw3.value() == 0):
-            motor2.forward(50)
+            motor2.forward(value)
         elif (sw4.value() == 0):
-            motor2.backward(50)
+            motor2.backward(value)
         else:
             motor2.stop()
             
